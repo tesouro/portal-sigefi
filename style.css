@@ -2,6 +2,10 @@
     box-sizing: border-box;
 }
 
+:root {
+    --topbar-h: 50px;
+}
+
 body {
     margin: 0;
     padding: 0;
@@ -9,8 +13,10 @@ body {
     color: white;
 }
 
+/* HEADER and MENU */
+
 header {
-    height: 50px;
+    height: var(--topbar-h);
     display: flex;
     justify-content: space-between;
     padding: 5px;
@@ -32,7 +38,7 @@ ul.menu {
     transition: opacity .75s;
     position: absolute;
     right: 0;
-    top: 50px;
+    top: var(--topbar-h);
     width: 200px;
     margin: 0;
 }
@@ -58,4 +64,10 @@ ul.menu.hidden {
 
 ul.menu.hidden li.menu-item {
     transform: translateX(100%);
+}
+
+/* ABOVE THE FOLD LAYOUT */
+
+.opening {
+    height: calc(100vh - var(--topbar-h));
 }
