@@ -81,23 +81,23 @@ class Square {
 
     }
 
-    update_position(tipo, sem_margin) {
+    update_position(current_or_next, tipo, sem_margin) {
 
         let margin = sem_margin ? 0 : this.dims.margin;
         
-        this.current_visuals.lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
+        this[current_or_next + "_visuals"].lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
 
-        this.current_visuals.x = this.pos[tipo].i * ( this.current_visuals.lado + margin ) + this.dims.margin;
-        this.current_visuals.y = this.pos[tipo].j * ( this.current_visuals.lado + margin ) + this.dims.margin + 
+        this[current_or_next + "_visuals"].x = this.pos[tipo].i * ( this[current_or_next + "_visuals"].lado + margin ) + this.dims.margin;
+        this[current_or_next + "_visuals"].y = this.pos[tipo].j * ( this[current_or_next + "_visuals"].lado + margin ) + this.dims.margin + 
             (
                 tipo == "geral" ? 0 : parametros.espacamentos[tipo][this.classif[tipo]]
             );
 
     }
 
-    update_color(tipo) {
+    update_color(current_or_next, tipo) {
 
-        this.current_visuals.color = parametros.cores[tipo][this.classif[tipo]];
+        this[current_or_next + "_visuals"].color = parametros.cores[tipo][this.classif[tipo]];
 
     }
 
