@@ -8,6 +8,8 @@ const H = +window.getComputedStyle(cv).height.slice(0,-2);
 cv.width = W;
 cv.height = H;
 
+const cores = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'];
+
 // load data
 const data = fetch("data.json").then(output => output.json())
     .then(
@@ -39,31 +41,64 @@ class Square {
         this.index = indices;
         this.dims = dims;
 
-        this.update_position_geral();
+        const tipos = Object.keys(classificacoes);
+        tipos.push("geral");
+
+        tipos.forEach(tipo => this.pre_calcula_position(tipo));
 
     }
 
-    update_position_geral() {
+    pre_calcula_position(tipo) {
 
-        this.pos.i = this.index.geral % this.dims.qde_quadradinhos_coluna;
-        this.pos.j = Math.floor(this.index.geral / this.dims.qde_quadradinhos_coluna);
+        this.pos[tipo] = {};
+
+        this.pos[tipo].i = this.index[tipo] % 
+            ( tipo == "geral" ? this.dims.qde_quadradinhos_coluna : this.dims.qde_quadradinhos_coluna_barra );
+
+        this.pos[tipo].j = Math.floor(this.index[tipo] / 
+            ( tipo == "geral" ? this.dims.qde_quadradinhos_coluna : this.dims.qde_quadradinhos_coluna_barra) );
+
+    }
+
+    update_position(tipo, sem_margin) {
+
+        let margin = sem_margin ? 0 : this.dims.margin;
+        
+        this.lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
+
+        this.pos.x = this.pos[tipo].i * ( this.lado + margin ) + this.dims.margin;
+        this.pos.y = this.pos[tipo].j * ( this.lado + margin ) + this.dims.margin + 
+            (
+                tipo == "geral" ? 0 : parametros.espacamentos[tipo][this.classif[tipo]]
+            );
+
+    }
+
+    update_color(tipo) {
+
+        this.color = parametros.cores[tipo][this.classif[tipo]];
 
     }
 
     render() {
 
-        const x = this.pos.i * ( this.dims.lado + this.dims.margin ) + this.dims.margin;
-        const y = this.pos.j * ( this.dims.lado + this.dims.margin ) + this.dims.margin;
-
-        ctx.fillRect(x, y, this.dims.lado, this.dims.lado);
+        ctx.fillStyle = this.color;
+        ctx.fillRect(
+            this.pos.x, this.pos.y, this.lado, this.lado
+        );
 
     }
-
-
 
 }
 
 let squares = [];
+
+const parametros = {
+    dominios : {},
+    indices : {},
+    cores : {},
+    espacamentos : {}
+};
 
 function prepara_estruturas(data) {
 
@@ -76,24 +111,24 @@ function prepara_estruturas(data) {
 
     const margin = 2;
     const lado = lado_estimado - margin;
+    const lado_peq = 4;
+
+    const margin_entre_grupos = 20;
+    const altura_grupo = 20;
 
     const qde_quadradinhos_coluna = Math.floor(W / (margin + lado));
+    const qde_quadradinhos_coluna_barra = Math.floor(W / (margin + lado_peq));
 
     console.log(AREA, n_squares, area_aproximada_quadradinho, lado_estimado, qde_quadradinhos_coluna, Math.ceil(n_squares / qde_quadradinhos_coluna));
 
     const dims = {
-        AREA, W, H, lado, margin, qde_quadradinhos_coluna
+        AREA, W, H, lado, lado_peq, margin, qde_quadradinhos_coluna, qde_quadradinhos_coluna_barra, altura_grupo
     }
 
 
     // prepara estrutura para ir registrando os contadores dos indices de cada quadradinho dentro de cada classificacao
 
     let n = 0; // indice geral
-
-    const parametros = {
-        dominios : {},
-        indices : {}
-    };
 
     const classificacoes = ["Função Governo Nome", "Grupo Despesa Nome", "Resultado EOF"];
 
@@ -104,13 +139,26 @@ function prepara_estruturas(data) {
 
         // a partir dos domínios, inicializa um índice para cada classificação
         parametros.indices[classificacao] = {};
+        parametros.cores[classificacao] = {};
+        parametros.espacamentos[classificacao] = {};
 
-        parametros.dominios[classificacao].forEach(categoria => {
+        parametros.dominios[classificacao].forEach( (categoria,i) => {
 
             parametros.indices[classificacao][categoria] = 0;
+            parametros.cores[classificacao][categoria] = cores[i];
+
+            parametros.espacamentos[classificacao][categoria] = i * (altura_grupo * (lado_peq + margin) + margin_entre_grupos);
 
         })
         
+    })
+
+    parametros.cores["geral"] = {};
+
+    Object.keys(parametros.cores["Função Governo Nome"]).forEach( (fun,i) => {
+
+        parametros.cores["geral"][fun] = cores[i];
+
     })
 
     console.log(parametros);
@@ -126,6 +174,8 @@ function prepara_estruturas(data) {
 
         // ou seja, pega o valor de cada variável de classificação para essa linha, e armazena num objeto
         classificacoes.forEach(classif => classifs[classif] = linha[classif]);
+
+        classifs["geral"] = classifs["Função Governo Nome"];
 
         //console.log(classifs);
 
