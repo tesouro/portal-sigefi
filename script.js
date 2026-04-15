@@ -52,11 +52,29 @@ class Square {
 
         this.pos[tipo] = {};
 
+        if (tipo == "geral") {
+    
+            this.pos[tipo].i = this.index[tipo] % this.dims.qde_quadradinhos_coluna;
+
+            this.pos[tipo].j = Math.floor(this.index[tipo] / this.dims.qde_quadradinhos_coluna);
+
+
+        } else {
+        /*
         this.pos[tipo].i = this.index[tipo] % 
             ( tipo == "geral" ? this.dims.qde_quadradinhos_coluna : this.dims.qde_quadradinhos_coluna_barra );
 
         this.pos[tipo].j = Math.floor(this.index[tipo] / 
             ( tipo == "geral" ? this.dims.qde_quadradinhos_coluna : this.dims.qde_quadradinhos_coluna_barra) );
+        */
+
+        this.pos[tipo].j = this.index[tipo] % 
+            ( tipo == "geral" ? this.dims.qde_quadradinhos_coluna : this.dims.altura_grupo );
+
+        this.pos[tipo].i = Math.floor(this.index[tipo] / 
+            ( tipo == "geral" ? this.dims.qde_quadradinhos_coluna : this.dims.altura_grupo) );
+
+        }
 
     }
 
@@ -109,9 +127,9 @@ function prepara_estruturas(data) {
     const area_aproximada_quadradinho = AREA / n_squares;
     const lado_estimado = Math.floor(Math.sqrt(area_aproximada_quadradinho));
 
-    const margin = 2;
+    const margin = 1;
     const lado = lado_estimado - margin;
-    const lado_peq = 4;
+    const lado_peq = 3;
 
     const margin_entre_grupos = 20;
     const altura_grupo = 20;
@@ -213,6 +231,7 @@ function prepara_estruturas(data) {
     }) 
 
 }
+
 
 
 // elements
