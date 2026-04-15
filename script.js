@@ -1,3 +1,13 @@
+
+const cv = document.querySelector(".chart-classificacoes");
+const ctx = cv.getContext("2d");
+
+const W = +window.getComputedStyle(cv).width.slice(0,-2);
+const H = +window.getComputedStyle(cv).height.slice(0,-2);
+
+cv.width = W;
+cv.height = H;
+
 // load data
 const data = fetch("data.json").then(output => output.json())
     .then(
@@ -12,27 +22,69 @@ class Square {
     // o que preciso em cada quadradinho?
     // as suas classificações, e os seus índices dentro das classificações.
 
-    pos; // { x, y };
+    pos = {}; // { x, y };
     
     classif; // { funcao, gnd, rp };
 
     index; // { geral, funcao, gnd, rp };
 
+    dims; // lado, qde_quadradinhos_coluna, W, H etc.
+
     constructor( 
-        classificacoes, indices
+        classificacoes, indices, dims
     ) {
 
         //this.pos = { x, y };
         this.classif = classificacoes;
         this.index = indices;
+        this.dims = dims;
+
+        this.update_position_geral();
 
     }
+
+    update_position_geral() {
+
+        this.pos.i = this.index.geral % this.dims.qde_quadradinhos_coluna;
+        this.pos.j = Math.floor(this.index.geral / this.dims.qde_quadradinhos_coluna);
+
+    }
+
+    render() {
+
+        const x = this.pos.i * ( this.dims.lado + this.dims.margin ) + this.dims.margin;
+        const y = this.pos.j * ( this.dims.lado + this.dims.margin ) + this.dims.margin;
+
+        ctx.fillRect(x, y, this.dims.lado, this.dims.lado);
+
+    }
+
+
 
 }
 
 let squares = [];
 
 function prepara_estruturas(data) {
+
+    // vamos calcular as propriedades visuais:
+    const AREA = W * H;
+    const n_squares = data.map(d => d.squares).reduce( (pv, cv) => pv + cv);
+
+    const area_aproximada_quadradinho = AREA / n_squares;
+    const lado_estimado = Math.floor(Math.sqrt(area_aproximada_quadradinho));
+
+    const margin = 2;
+    const lado = lado_estimado - margin;
+
+    const qde_quadradinhos_coluna = Math.floor(W / (margin + lado));
+
+    console.log(AREA, n_squares, area_aproximada_quadradinho, lado_estimado, qde_quadradinhos_coluna, Math.ceil(n_squares / qde_quadradinhos_coluna));
+
+    const dims = {
+        AREA, W, H, lado, margin, qde_quadradinhos_coluna
+    }
+
 
     // prepara estrutura para ir registrando os contadores dos indices de cada quadradinho dentro de cada classificacao
 
@@ -65,10 +117,6 @@ function prepara_estruturas(data) {
 
     // processa os dados e vai criando os quadradinhos
     data.forEach( linha => {
-
-        const funcao = linha["Função Governo Nome"];
-        const gnd = linha["Grupo Despesa Nome"];
-        const rp = linha["Resultado EOF"];
 
         const qde_quadradinhos = linha.squares;
 
@@ -104,7 +152,8 @@ function prepara_estruturas(data) {
 
             const sq = new Square(
                 classifs,
-                indices_deste_quadradinho
+                indices_deste_quadradinho,
+                dims
             )
 
             squares.push(sq);
@@ -112,11 +161,6 @@ function prepara_estruturas(data) {
         }
 
     }) 
-
-
-
-
-    
 
 }
 
