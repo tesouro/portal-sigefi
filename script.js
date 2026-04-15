@@ -24,13 +24,16 @@ class Square {
     // o que preciso em cada quadradinho?
     // as suas classificações, e os seus índices dentro das classificações.
 
-    pos = {}; // { x, y };
+    pos = {}; // { i, j } para cada classificacao;
     
     classif; // { funcao, gnd, rp };
 
     index; // { geral, funcao, gnd, rp };
 
     dims; // lado, qde_quadradinhos_coluna, W, H etc.
+
+    current_visuals = {}; // x, y, lado, cor
+    next_visuals = {}; // x, y, lado, cor
 
     constructor( 
         classificacoes, indices, dims
@@ -82,10 +85,10 @@ class Square {
 
         let margin = sem_margin ? 0 : this.dims.margin;
         
-        this.lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
+        this.current_visuals.lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
 
-        this.pos.x = this.pos[tipo].i * ( this.lado + margin ) + this.dims.margin;
-        this.pos.y = this.pos[tipo].j * ( this.lado + margin ) + this.dims.margin + 
+        this.current_visuals.x = this.pos[tipo].i * ( this.current_visuals.lado + margin ) + this.dims.margin;
+        this.current_visuals.y = this.pos[tipo].j * ( this.current_visuals.lado + margin ) + this.dims.margin + 
             (
                 tipo == "geral" ? 0 : parametros.espacamentos[tipo][this.classif[tipo]]
             );
@@ -94,15 +97,15 @@ class Square {
 
     update_color(tipo) {
 
-        this.color = parametros.cores[tipo][this.classif[tipo]];
+        this.current_visuals.color = parametros.cores[tipo][this.classif[tipo]];
 
     }
 
     render() {
 
-        ctx.fillStyle = this.color;
+        ctx.fillStyle = this.current_visuals.color;
         ctx.fillRect(
-            this.pos.x, this.pos.y, this.lado, this.lado
+            this.current_visuals.x, this.current_visuals.y, this.current_visuals.lado, this.current_visuals.lado
         );
 
     }
@@ -232,6 +235,22 @@ function prepara_estruturas(data) {
 
 }
 
+// a sequencia é: 
+// plota o snake plot
+// update_color pra outro tipo
+// update_position com margem para esse tipo
+// transicao
+// render
+// update_position sem margem para esse tipo
+// transicao
+// render
+// update_position com margem para esse tipo
+// transicao
+// render
+// update_color para um outro tipo
+// render
+// update_position para esse outro tipo
+// tem que armazenar valores futuros de x, y, lado e cor.
 
 
 // elements
