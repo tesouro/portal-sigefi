@@ -138,7 +138,8 @@ class Square {
 
     update_color(tipo) {
 
-        this.color = parametros.cores[tipo][this.classif[tipo]];
+        //this.color = parametros.cores[tipo][this.classif[tipo]];
+        this.color = this.next_visuals["com margem"][tipo].cor; // tanto faz "com margem" ou "sem margem".
 
     }
 
@@ -284,7 +285,6 @@ function init() {
 }
 
 function render() {
-    console.log("aqui");
     ctx.clearRect(0,0,W,H);
     squares.forEach(sq => sq.render());
 }
@@ -306,10 +306,17 @@ function render() {
 // update_position para esse outro tipo
 // tem que armazenar valores futuros de x, y, lado e cor.
 
-function get_future_value (i, target, atributo ) {
+function get_future_value (i, target, tipo, com_sem_margin, atributo ) {
     
-    return target.next_visuals[atributo];
+    return target.next_visuals[com_sem_margin][tipo][atributo];
 
+}
+
+function colore_por(tipo) {
+    squares.forEach(sq => {
+        sq.update_color(tipo);
+        sq.render();
+    })
 }
 
 // buttons
@@ -324,9 +331,35 @@ btnVisaoGeral.addEventListener("click", e => {
 });
 
 btnVisaoGND.addEventListener("click", e => {
-    console.log("Visão Geral");
-    ctx.clearRect(0,0,W,H);
-    squares.forEach(sq => sq.update_next_position("Grupo Despesa Nome", false));    
+    console.log("Visão GND");
+    gsap.to(squares, {
+
+        delay: 0,
+        duration: 1,
+        color : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'cor'),
+        onUpdate : render,
+
+    })
+    gsap.to(squares, {
+
+        delay: 1,
+        duration: 1,
+        x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'x'),
+        y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'y'),
+        lado : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'lado'),
+        onUpdate : render,
+
+    })
+    gsap.to(squares, {
+
+        delay: 3,
+        duration: .5,
+        x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'x'),
+        y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'y'),
+        onUpdate : render,
+
+    })
+  
 })
 
 
