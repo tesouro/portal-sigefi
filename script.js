@@ -16,6 +16,21 @@ const data = fetch("data.json").then(output => output.json())
         data => {
             console.log(data);
             prepara_estruturas(data);
+            init();
+            //render();
+
+            let i = 0;
+            let I = squares.length;
+            /*let intervalId = setInterval( () => {
+
+                squares[i].render();
+                i++;
+
+                if (i > I) clearInterval(intervalId);
+
+                console.log(i);
+
+            }, 0.001);*/
         });
 
 
@@ -33,7 +48,10 @@ class Square {
     dims; // lado, qde_quadradinhos_coluna, W, H etc.
 
     current_visuals = {}; // x, y, lado, cor
-    next_visuals = {}; // x, y, lado, cor
+    next_visuals = {
+        'com margem' : {}, // tipo = { x, y, lado, cor }
+        'sem margem' : {}
+    }; 
 
     constructor( 
         classificacoes, indices, dims
@@ -47,7 +65,11 @@ class Square {
         const tipos = Object.keys(classificacoes);
         tipos.push("geral");
 
-        tipos.forEach(tipo => this.pre_calcula_position(tipo));
+        tipos.forEach(tipo => {
+            this.pre_calcula_position(tipo);
+            this.pre_calcula_next_visuals(tipo, true);
+            this.pre_calcula_next_visuals(tipo, false);
+        });
 
     }
 
@@ -81,31 +103,50 @@ class Square {
 
     }
 
-    update_position(current_or_next, tipo, sem_margin) {
+    pre_calcula_next_visuals(tipo, sem_margin) {
+
+        let margin = sem_margin ? 0 : this.dims.margin;
+        let chave_margin = sem_margin ? "sem margem" : "com margem"
+
+        this.next_visuals[chave_margin][tipo] = {};
+        
+        this.next_visuals[chave_margin][tipo].lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
+
+        this.next_visuals[chave_margin][tipo].x = this.pos[tipo].i * ( this.next_visuals[chave_margin][tipo].lado + margin ) + this.dims.margin;
+        this.next_visuals[chave_margin][tipo].y = this.pos[tipo].j * ( this.next_visuals[chave_margin][tipo].lado + margin ) + this.dims.margin + 
+            (
+                tipo == "geral" ? 0 : parametros.espacamentos[tipo][this.classif[tipo]]
+            );
+
+        this.next_visuals[chave_margin][tipo].cor = parametros.cores[tipo][this.classif[tipo]];
+
+    }
+
+    update_position(tipo, sem_margin) {
 
         let margin = sem_margin ? 0 : this.dims.margin;
         
-        this[current_or_next + "_visuals"].lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
+        this.lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
 
-        this[current_or_next + "_visuals"].x = this.pos[tipo].i * ( this[current_or_next + "_visuals"].lado + margin ) + this.dims.margin;
-        this[current_or_next + "_visuals"].y = this.pos[tipo].j * ( this[current_or_next + "_visuals"].lado + margin ) + this.dims.margin + 
+        this.x = this.pos[tipo].i * ( this.lado + margin ) + this.dims.margin;
+        this.y = this.pos[tipo].j * ( this.lado + margin ) + this.dims.margin + 
             (
                 tipo == "geral" ? 0 : parametros.espacamentos[tipo][this.classif[tipo]]
             );
 
     }
 
-    update_color(current_or_next, tipo) {
+    update_color(tipo) {
 
-        this[current_or_next + "_visuals"].color = parametros.cores[tipo][this.classif[tipo]];
+        this.color = parametros.cores[tipo][this.classif[tipo]];
 
     }
 
     render() {
 
-        ctx.fillStyle = this.current_visuals.color;
+        ctx.fillStyle = this.color;
         ctx.fillRect(
-            this.current_visuals.x, this.current_visuals.y, this.current_visuals.lado, this.current_visuals.lado
+            this.x, this.y, this.lado, this.lado
         );
 
     }
@@ -235,6 +276,19 @@ function prepara_estruturas(data) {
 
 }
 
+function init() {
+    squares.forEach(sq => sq.update_position("geral", false));
+    //squares.forEach(sq => sq.update_color("geral"));
+    //quares.forEach(sq => sq.update_next_position("Grupo Despesa Nome", false));
+    //squares.forEach(sq => sq.update_next_color("Grupo Despesa Nome"));
+}
+
+function render() {
+    console.log("aqui");
+    ctx.clearRect(0,0,W,H);
+    squares.forEach(sq => sq.render());
+}
+
 // a sequencia é: 
 // plota o snake plot
 // update_color pra outro tipo
@@ -251,6 +305,29 @@ function prepara_estruturas(data) {
 // render
 // update_position para esse outro tipo
 // tem que armazenar valores futuros de x, y, lado e cor.
+
+function get_future_value (i, target, atributo ) {
+    
+    return target.next_visuals[atributo];
+
+}
+
+// buttons
+
+btnVisaoGeral.addEventListener("click", e => {
+    console.log("Visão Geral");
+    ctx.clearRect(0,0,W,H);
+    squares.forEach(sq => {
+        sq.update_position("geral", false);
+        sq.render();
+    });
+});
+
+btnVisaoGND.addEventListener("click", e => {
+    console.log("Visão Geral");
+    ctx.clearRect(0,0,W,H);
+    squares.forEach(sq => sq.update_next_position("Grupo Despesa Nome", false));    
+})
 
 
 // elements
