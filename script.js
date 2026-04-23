@@ -120,7 +120,7 @@ class Square {
 
         let margin = sem_margin ? 0 : this.dims.margin;
         
-        this.lado = tipo == "geral" ? this.dims.lado : this.dims.lado_peq;
+        this.lado = tipo == "geral" ? 0 : this.dims.lado_peq;
 
         this.x = this.pos[tipo].i * ( this.lado + margin ) + this.dims.margin;
         this.y = this.pos[tipo].j * ( this.lado + margin ) + this.dims.margin + 
