@@ -8,9 +8,9 @@ const H = +window.getComputedStyle(cv).height.slice(0,-2);
 cv.width = W;
 cv.height = H;
 
-const cores = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'];
+let estado;
 
-let tl_gnd, tl_fun;
+const cores = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'];
 
 // load data
 const data = fetch("data.json").then(output => output.json())
@@ -23,73 +23,6 @@ const data = fetch("data.json").then(output => output.json())
 
             let i = 0;
             let I = squares.length;
-
-            tl_gnd = new gsap.timeline({paused: true})
-                .to(squares, {
-
-                    duration: 1,
-                    color : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'cor'),
-                    onUpdate : render,
-
-                })
-                .to(squares, {
-
-                    duration: 2,
-                    stagger: {
-                        each: 0.0001,
-                        from: 'random'
-                    },
-                    x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'x'),
-                    y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'y'),
-                    lado : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'lado'),
-                    onUpdate : render,
-
-                })
-                .to(squares, {
-
-                    duration: .5,
-                    x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'x'),
-                    y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'y'),
-                    onUpdate : render,
-
-                }, ">.5");
-
-            tl_fun = new gsap.timeline({paused: true})
-
-            // esse aqui tem que considerar o estado atual
-                .to(squares, {
-                    duration: 1,
-                    x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'x'),
-                    y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'y'),
-                    onUpdate : render,
-                })
-                .to(squares, {
-
-                    duration: 1,
-                    color : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'cor'),
-                    onUpdate : render,
-                })
-                .to(squares, {
-
-                    duration: 2,
-                    stagger: {
-                        each: 0.0001,
-                        from: 'random'
-                    },
-                    x : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'x'),
-                    y : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'y'),
-                    lado : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'lado'),
-                    onUpdate : render,
-
-                })
-                .to(squares, {
-
-                    duration: .5,
-                    x : (i, target) => get_future_value(i, target, 'Função Governo Nome', "sem margem", 'x'),
-                    y : (i, target) => get_future_value(i, target, 'Função Governo Nome', "sem margem", 'y'),
-                    onUpdate : render,
-
-                }, ">.5");
 
         }
     );
@@ -340,6 +273,7 @@ function prepara_estruturas(data) {
 
 function init() {
     squares.forEach(sq => sq.update_position("geral", false));
+    estado = "geral";
     //squares.forEach(sq => sq.update_color("geral"));
     //quares.forEach(sq => sq.update_next_position("Grupo Despesa Nome", false));
     //squares.forEach(sq => sq.update_next_color("Grupo Despesa Nome"));
@@ -386,22 +320,113 @@ function colore_por(tipo) {
 
 btnVisaoGeral.addEventListener("click", e => {
     console.log("Visão Geral");
-    ctx.clearRect(0,0,W,H);
-    squares.forEach(sq => {
-        sq.update_position("geral", false);
-        sq.render();
+
+    gsap.to(squares, {
+
+        duration: 2,
+        stagger: {
+            each: 0.0001,
+            from: 'random'
+        },
+        x : (i, target) => get_future_value(i, target, 'geral', "com margem", 'x'),
+        y : (i, target) => get_future_value(i, target, 'geral', "com margem", 'y'),
+        lado : (i, target) => get_future_value(i, target, 'geral', "com margem", 'lado'),
+        color : "gold",
+        onUpdate : render,
+
     });
+
+    estado = "geral";
+
 });
 
 btnVisaoGND.addEventListener("click", e => {
-    console.log("Visão GND");
-    tl_gnd.progress(0).play();
+    console.log("Visão GND", estado);
+
+    const tl_gnd = new gsap.timeline({paused: true})
+        .to(squares, {
+            duration: 1,
+            x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
+            y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
+            onUpdate : render,
+        }, ">")
+        .to(squares, {
+
+            duration: 1,
+            color : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'cor'),
+            onUpdate : render,
+
+        }, ">")
+        .to(squares, {
+
+            duration: 2,
+            stagger: {
+                each: 0.0001,
+                from: 'random'
+            },
+            x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'x'),
+            y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'y'),
+            lado : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'lado'),
+            onUpdate : render,
+
+        }, ">")
+        .to(squares, {
+
+            duration: .5,
+            x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'x'),
+            y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'y'),
+            onUpdate : render,
+            onComplete : () => { estado = 'Grupo Despesa Nome'; }
+
+        }, ">.5");
+
+    tl_gnd.play();
   
 });
 
 btnVisaoFuncao.addEventListener("click", e => {
-    console.log("Visão Função");
-    tl_fun.progress(0).play();
+    console.log("Visão Função", estado);
+
+    const tl_fun = new gsap.timeline({paused: true})
+        // esse aqui tem que considerar o estado atual
+        .to(squares, {
+            duration: 1,
+            x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
+            y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
+            onUpdate : render,
+        }, ">")
+        .to(squares, {
+
+            duration: 1,
+            color : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'cor'),
+            onUpdate : render,
+        }, ">")
+        .to(squares, {
+
+            duration: 2,
+            stagger: {
+                each: 0.0001,
+                from: 'random'
+            },
+            x : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'x'),
+            y : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'y'),
+            lado : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'lado'),
+            onUpdate : render,
+
+        }, ">")
+        .to(squares, {
+
+            duration: .5,
+            x : (i, target) => get_future_value(i, target, 'Função Governo Nome', "sem margem", 'x'),
+            y : (i, target) => get_future_value(i, target, 'Função Governo Nome', "sem margem", 'y'),
+            onUpdate : render,
+            onComplete : () => { estado = "Função Governo Nome"; }
+
+        }, ">.5");
+    
+    tl_fun.play();
+
+    ;
 
 })
 
