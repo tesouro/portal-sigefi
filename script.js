@@ -315,120 +315,86 @@ function colore_por(tipo) {
 }
 
 // buttons
+function transition(tipo) {
 
+    if (tipo == "geral") {
 
-
-btnVisaoGeral.addEventListener("click", e => {
-    console.log("Visão Geral");
-
-    gsap.to(squares, {
-
-        duration: 2,
-        stagger: {
-            each: 0.0001,
-            from: 'random'
-        },
-        x : (i, target) => get_future_value(i, target, 'geral', "com margem", 'x'),
-        y : (i, target) => get_future_value(i, target, 'geral', "com margem", 'y'),
-        lado : (i, target) => get_future_value(i, target, 'geral', "com margem", 'lado'),
-        color : "gold",
-        onUpdate : render,
-
-    });
-
-    estado = "geral";
-
-});
-
-btnVisaoGND.addEventListener("click", e => {
-    console.log("Visão GND", estado);
-
-    const tl_gnd = new gsap.timeline({paused: true})
-        .to(squares, {
-            duration: 1,
-            x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
-            y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
-            onUpdate : render,
-        }, ">")
-        .to(squares, {
-
-            duration: 1,
-            color : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'cor'),
-            onUpdate : render,
-
-        }, ">")
-        .to(squares, {
+        gsap.to(squares, {
 
             duration: 2,
             stagger: {
                 each: 0.0001,
                 from: 'random'
             },
-            x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'x'),
-            y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'y'),
-            lado : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "com margem", 'lado'),
+            x : (i, target) => get_future_value(i, target, 'geral', "com margem", 'x'),
+            y : (i, target) => get_future_value(i, target, 'geral', "com margem", 'y'),
+            lado : (i, target) => get_future_value(i, target, 'geral', "com margem", 'lado'),
+            color : "#FFD700",
             onUpdate : render,
+            onComplete : () => { estado = tipo }
 
-        }, ">")
-        .to(squares, {
+        });
 
-            duration: .5,
-            x : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'x'),
-            y : (i, target) => get_future_value(i, target, 'Grupo Despesa Nome', "sem margem", 'y'),
-            onUpdate : render,
-            onComplete : () => { estado = 'Grupo Despesa Nome'; }
+    } else {
 
-        }, ">.5");
+        const tl = new gsap.timeline({paused: true})
+            .to(squares, {
+                duration: 1,
+                x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
+                y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
+                onUpdate : render,
+            }, ">")
+            .to(squares, {
 
-    tl_gnd.play();
-  
-});
+                duration: 1,
+                color : (i, target) => get_future_value(i, target, tipo, "com margem", 'cor'),
+                onUpdate : render,
 
-btnVisaoFuncao.addEventListener("click", e => {
-    console.log("Visão Função", estado);
+            }, ">")
+            .to(squares, {
 
-    const tl_fun = new gsap.timeline({paused: true})
-        // esse aqui tem que considerar o estado atual
-        .to(squares, {
-            duration: 1,
-            x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
-            y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
-            onUpdate : render,
-        }, ">")
-        .to(squares, {
+                duration: 2,
+                stagger: {
+                    each: 0.0001,
+                    from: 'random'
+                },
+                x : (i, target) => get_future_value(i, target, tipo, "com margem", 'x'),
+                y : (i, target) => get_future_value(i, target, tipo, "com margem", 'y'),
+                lado : (i, target) => get_future_value(i, target, tipo, "com margem", 'lado'),
+                onUpdate : render,
 
-            duration: 1,
-            color : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'cor'),
-            onUpdate : render,
-        }, ">")
-        .to(squares, {
+            }, ">")
+            .to(squares, {
 
-            duration: 2,
-            stagger: {
-                each: 0.0001,
-                from: 'random'
-            },
-            x : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'x'),
-            y : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'y'),
-            lado : (i, target) => get_future_value(i, target, 'Função Governo Nome', "com margem", 'lado'),
-            onUpdate : render,
+                duration: .5,
+                x : (i, target) => get_future_value(i, target, tipo, "sem margem", 'x'),
+                y : (i, target) => get_future_value(i, target, tipo, "sem margem", 'y'),
+                onUpdate : render,
+                onComplete : () => { estado = tipo; }
 
-        }, ">")
-        .to(squares, {
+            }, ">.5");
 
-            duration: .5,
-            x : (i, target) => get_future_value(i, target, 'Função Governo Nome', "sem margem", 'x'),
-            y : (i, target) => get_future_value(i, target, 'Função Governo Nome', "sem margem", 'y'),
-            onUpdate : render,
-            onComplete : () => { estado = "Função Governo Nome"; }
+        tl.play();
 
-        }, ">.5");
+
+    }
+
+}
+
+
+btnWrapper.addEventListener("click", e => {
     
-    tl_fun.play();
+    if (e.target.tagName == 'BUTTON') {
 
-    ;
+        const tipo = e.target.dataset.tipo;
 
-})
+        console.log(tipo);
+
+        transition(tipo);
+
+    }
+
+});
 
 
 // elements
