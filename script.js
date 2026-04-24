@@ -8,6 +8,8 @@ const H = +window.getComputedStyle(cv).height.slice(0,-2);
 cv.width = W;
 cv.height = H;
 
+const margem_esquerda_canvas = getComputedStyle(cv).marginLeft;
+
 let estado;
 
 const cores = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'];
@@ -300,6 +302,7 @@ function prepara_rotulos(classificacoes) {
             p_rotulo.classList.add("rotulo");
             p_rotulo.style.opacity = 0;
             p_rotulo.style.top = parametros.espacamentos[classificacao][categoria] + "px";
+            p_rotulo.style.left = margem_esquerda_canvas;
             p_rotulo.dataset.rotuloClassificacao = classificacao;
 
             p_rotulo.innerHTML="<strong>" + categoria + "</strong> (R$ " + (categorias_obj[categoria] / 1e9).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + " bi)";

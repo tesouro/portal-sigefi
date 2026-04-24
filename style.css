@@ -95,7 +95,7 @@ canvas.chart-classificacoes {
 
     position: absolute;
     margin: 0;
-    transform: translate(-100%);
+    transform: translateY(-100%);
     font-size: .8rem;
 
 }
