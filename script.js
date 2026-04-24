@@ -156,7 +156,8 @@ const parametros = {
     dominios : {},
     indices : {},
     cores : {},
-    espacamentos : {}
+    espacamentos : {},
+    rotulos : {}
 };
 
 function prepara_estruturas(data) {
@@ -172,7 +173,7 @@ function prepara_estruturas(data) {
     const lado = lado_estimado - margin;
     const lado_peq = 3;
 
-    const margin_entre_grupos = 20;
+    const margin_entre_grupos = 10;
     const altura_grupo = 20;
 
     const qde_quadradinhos_coluna = Math.floor(W / (margin + lado));
@@ -200,13 +201,19 @@ function prepara_estruturas(data) {
         parametros.indices[classificacao] = {};
         parametros.cores[classificacao] = {};
         parametros.espacamentos[classificacao] = {};
+        parametros.rotulos[classificacao] = {};
 
         parametros.dominios[classificacao].forEach( (categoria,i) => {
 
             parametros.indices[classificacao][categoria] = 0;
             parametros.cores[classificacao][categoria] = cores[i];
+            parametros.rotulos[classificacao][categoria] = data
+               .filter(d => d[classificacao] == categoria)
+               .map(d => d["PAGAMENTOS TOTAIS (EXERCICIO + RP)"])
+               .reduce( (pv, cv) => pv + cv)
+            ;
 
-            parametros.espacamentos[classificacao][categoria] = i * (altura_grupo * (lado_peq + margin) + margin_entre_grupos);
+            parametros.espacamentos[classificacao][categoria] = i * (altura_grupo * (lado_peq + margin) + margin_entre_grupos) + margin_entre_grupos * 2;
 
         })
         
@@ -269,7 +276,45 @@ function prepara_estruturas(data) {
 
         }
 
-    }) 
+    });
+
+    prepara_rotulos(classificacoes);
+
+}
+
+function prepara_rotulos(classificacoes) {
+
+    const rotulos = parametros.rotulos;
+
+    const container = document.querySelector(".chart-wrapper");
+
+    classificacoes.forEach(classificacao => {
+
+        categorias_obj = rotulos[classificacao];
+
+        categorias = Object.keys(categorias_obj);
+
+        categorias.forEach(categoria => {
+
+            const p_rotulo = document.createElement("p");
+            p_rotulo.classList.add("rotulo");
+            p_rotulo.style.opacity = 0;
+            p_rotulo.style.top = parametros.espacamentos[classificacao][categoria] + "px";
+            p_rotulo.dataset.rotuloClassificacao = classificacao;
+
+            p_rotulo.innerHTML="<strong>" + categoria + "</strong> (R$ " + (categorias_obj[categoria] / 1e9).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + " bi)";
+
+            container.appendChild(p_rotulo);
+
+        })
+
+
+
+
+
+    })
+
+
 
 }
 
@@ -340,6 +385,7 @@ function transition(tipo) {
     } else {
 
         const tl = new gsap.timeline({paused: true})
+            .set(".rotulo", { opacity : 0 })
             .to(squares, {
                 duration: 1,
                 x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
@@ -377,7 +423,10 @@ function transition(tipo) {
                 onUpdate : render,
                 onComplete : () => { estado = tipo; }
 
-            }, ">.5");
+            }, ">.5")
+            .to(`[data-rotulo-classificacao="${tipo}"`, { duration: .5, opacity : 1 },
+                "<"
+            )
 
         tl.play();
 

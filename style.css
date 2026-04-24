@@ -81,6 +81,21 @@ canvas.chart-classificacoes {
     margin: 0 auto;
     max-width: 800px;
     height: 900px;
-    max-height: 90vh;
+    max-height: 95vh;
+
+}
+
+.chart-wrapper {
+
+    position: relative;
+
+}
+
+.rotulo {
+
+    position: absolute;
+    margin: 0;
+    transform: translate(-100%);
+    font-size: .8rem;
 
 }
