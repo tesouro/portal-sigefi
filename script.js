@@ -10,18 +10,7 @@ cv.height = H;
 
 let estado;
 
-//const cores = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'];
-const cores = [
-  { r: 166, g: 206, b: 227 },
-  { r: 31,  g: 120, b: 180 },
-  { r: 178, g: 223, b: 138 },
-  { r: 51,  g: 160, b: 44  },
-  { r: 251, g: 154, b: 153 },
-  { r: 227, g: 26,  b: 28  },
-  { r: 253, g: 191, b: 111 },
-  { r: 255, g: 127, b: 0   },
-  { r: 202, g: 178, b: 214 }
-];
+const cores = ['#a6cee3','#1f78b4','#b2df8a','#33a02c','#fb9a99','#e31a1c','#fdbf6f','#ff7f00','#cab2d6'];
 
 // load data
 const data = fetch("data.json").then(output => output.json())
@@ -45,12 +34,6 @@ class Square {
     // as suas classificações, e os seus índices dentro das classificações.
 
     pos = {}; // { i, j } para cada classificacao;
-
-    x; y; lado; 
-
-    r = 0;
-    g = 0;
-    b = 0;
     
     classif; // { funcao, gnd, rp };
 
@@ -150,17 +133,13 @@ class Square {
     update_color(tipo) {
 
         //this.color = parametros.cores[tipo][this.classif[tipo]];
-        //this.color = this.next_visuals["com margem"][tipo].cor; // tanto faz "com margem" ou "sem margem".
-        this.r = +this.next_visuals["com margem"][tipo].cor.r;
-        this.g = +this.next_visuals["com margem"][tipo].cor.g;
-        this.b = +this.next_visuals["com margem"][tipo].cor.b;
+        this.color = this.next_visuals["com margem"][tipo].cor; // tanto faz "com margem" ou "sem margem".
 
     }
 
     render() {
 
-        //ctx.fillStyle = this.color;
-        ctx.fillStyle = `rgb(${this.r}, ${this.g}, ${this.b})`;
+        ctx.fillStyle = this.color;
         ctx.fillRect(
             this.x, this.y, this.lado, this.lado
         );
@@ -328,12 +307,6 @@ function get_future_value (i, target, tipo, com_sem_margin, atributo ) {
 
 }
 
-function get_future_color (i, target, tipo, com_sem_margin, canal ) {
-
-    return target.next_visuals[com_sem_margin][tipo].cor[canal];
-
-}
-
 function colore_por(tipo) {
     squares.forEach(sq => {
         sq.update_color(tipo);
@@ -356,10 +329,7 @@ function transition(tipo) {
             x : (i, target) => get_future_value(i, target, 'geral', "com margem", 'x'),
             y : (i, target) => get_future_value(i, target, 'geral', "com margem", 'y'),
             lado : (i, target) => get_future_value(i, target, 'geral', "com margem", 'lado'),
-            r : 255, 
-            g : 215, 
-            b : 0,
-            //color : "#FFD700",
+            color : "#FFD700",
             onUpdate : render,
             onComplete : () => { estado = tipo }
 
@@ -377,14 +347,7 @@ function transition(tipo) {
             .to(squares, {
 
                 duration: 1,
-                stagger: {
-                    each: 0.0001,
-                    from: 'random'
-                },
-                //color : (i, target) => get_future_value(i, target, tipo, "com margem", 'cor'),
-                r : (i, target) => get_future_color(i, target, tipo, "com margem", 'r'),
-                g : (i, target) => get_future_color(i, target, tipo, "com margem", 'g'),
-                b : (i, target) => get_future_color(i, target, tipo, "com margem", 'b'),
+                color : (i, target) => get_future_value(i, target, tipo, "com margem", 'cor'),
                 onUpdate : render,
 
             }, ">")
