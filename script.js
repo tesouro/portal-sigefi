@@ -59,6 +59,8 @@ class Square {
         const tipos = Object.keys(classificacoes);
         tipos.push("geral");
 
+        this.color = "white";
+
         tipos.forEach(tipo => {
             this.pre_calcula_position(tipo);
             this.pre_calcula_next_visuals(tipo, true);
@@ -344,9 +346,12 @@ function transition(tipo) {
                 y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
                 onUpdate : render,
             }, ">")
-            .to(squares, {
+            .set(squares, {
 
-                duration: 1,
+                stagger: {
+                    each: 0.0002,
+                    from: 'random'
+                },
                 color : (i, target) => get_future_value(i, target, tipo, "com margem", 'cor'),
                 onUpdate : render,
 
@@ -363,7 +368,7 @@ function transition(tipo) {
                 lado : (i, target) => get_future_value(i, target, tipo, "com margem", 'lado'),
                 onUpdate : render,
 
-            }, ">")
+            }, ">.6")
             .to(squares, {
 
                 duration: .5,
