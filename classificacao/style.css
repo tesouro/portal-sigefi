@@ -139,3 +139,29 @@ canvas.chart-classificacoes {
     font-family: inherit;
     font-size: 1rem;
 }*/
+
+/* SCROLLER */
+
+.container-scroller {
+    position: relative;
+    max-width: 620px;
+    margin: 0 auto;
+}
+
+.container-chart-scroller {
+    position: sticky;
+    top: 1rem;
+    left: 0;
+    height: 400px;
+    border: 1px solid pink;
+}
+
+.container-story {
+    margin-top: 0;
+    border: 2px solid black;
+    width: 100%;
+}
+
+.wrapper-step {
+    height: 100vh;
+}
