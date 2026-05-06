@@ -19,6 +19,7 @@ const data = fetch("data.json").then(output => output.json())
     .then(
         data => {
             console.log(data);
+            console.log(data.map(d => d["PAGAMENTOS TOTAIS (EXERCICIO + RP)"]).reduce( (a,b) => a + b));
             prepara_estruturas(data);
             init();
             //render();
@@ -379,11 +380,12 @@ function transition(tipo) {
             x : (i, target) => get_future_value(i, target, 'geral', "com margem", 'x'),
             y : (i, target) => get_future_value(i, target, 'geral', "com margem", 'y'),
             lado : (i, target) => get_future_value(i, target, 'geral', "com margem", 'lado'),
-            color : "#FFD700",
+            color : "#c800ff",
             onUpdate : render,
             onComplete : () => { estado = tipo }
 
         });
+        gsap.set(".rotulo", { opacity : 0 });
 
     } else {
 
