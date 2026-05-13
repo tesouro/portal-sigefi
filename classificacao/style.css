@@ -4,6 +4,7 @@
 
 :root {
     --topbar-h: 50px;
+    --azul-portal: #345d96;
 }
 
 body {
@@ -96,6 +97,40 @@ ul.menu.hidden li.menu-item {
     font-size: 2rem;
 }
 
+/* BOTOES */
+
+#btnWrapper {
+    margin: 2rem auto;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+
+}
+
+button[data-tipo] {
+
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    border-top: 2px solid transparent;
+    padding: .5em;
+    flex: 0 0 15%;
+
+}
+
+button[data-tipo].ativo {
+
+    font-weight: bold;
+    background-color: var(--azul-portal);
+    color: white;
+    
+
+}
+
+button[data-tipo]:hover {
+    border-bottom-color: var(--azul-portal);
+}
+
 /* CHARTS */
 
 canvas.chart-classificacoes {
@@ -121,14 +156,6 @@ canvas.chart-classificacoes {
     margin: 0;
     transform: translateY(-100%);
     font-size: .8rem;
-
-}
-
-#btnWrapper {
-    margin: 2rem auto;
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
 
 }
 /*

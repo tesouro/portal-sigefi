@@ -440,12 +440,20 @@ function transition(tipo) {
 
 }
 
+function limpar_botoes() {
+
+    btnWrapper.querySelectorAll("button").forEach(btn => btn.classList.remove("ativo"));
+
+}
 
 btnWrapper.addEventListener("click", e => {
     
     if (e.target.tagName == 'BUTTON') {
 
         const tipo = e.target.dataset.tipo;
+
+        limpar_botoes();
+        e.target.classList.add("ativo");
 
         console.log(tipo);
 
