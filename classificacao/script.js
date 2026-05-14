@@ -8,6 +8,8 @@ const H = +window.getComputedStyle(cv).height.slice(0,-2);
 cv.width = W;
 cv.height = H;
 
+const t_transicao = 1;
+
 const margem_esquerda_canvas = getComputedStyle(cv).marginLeft;
 
 let estado;
@@ -372,7 +374,7 @@ function transition(tipo) {
 
         gsap.to(squares, {
 
-            duration: 2,
+            duration: t_transicao,
             stagger: {
                 each: 0.0001,
                 from: 'random'
@@ -392,7 +394,7 @@ function transition(tipo) {
         const tl = new gsap.timeline({paused: true})
             .set(".rotulo", { opacity : 0 })
             .to(squares, {
-                duration: 1,
+                duration: t_transicao / 2,
                 x : (i, target) => get_future_value(i, target, estado, "com margem", 'x'),
                 y : (i, target) => get_future_value(i, target, estado, "com margem", 'y'),
                 onUpdate : render,
@@ -409,7 +411,7 @@ function transition(tipo) {
             }, ">")
             .to(squares, {
 
-                duration: 2,
+                duration: t_transicao,
                 stagger: {
                     each: 0.0001,
                     from: 'random'
@@ -422,14 +424,14 @@ function transition(tipo) {
             }, ">.6")
             .to(squares, {
 
-                duration: .5,
+                duration: t_transicao / 2,
                 x : (i, target) => get_future_value(i, target, tipo, "sem margem", 'x'),
                 y : (i, target) => get_future_value(i, target, tipo, "sem margem", 'y'),
                 onUpdate : render,
                 onComplete : () => { estado = tipo; }
 
             }, ">.5")
-            .to(`[data-rotulo-classificacao="${tipo}"`, { duration: .5, opacity : 1 },
+            .to(`[data-rotulo-classificacao="${tipo}"`, { duration: t_transicao / 2, opacity : 1 },
                 "<"
             )
 
