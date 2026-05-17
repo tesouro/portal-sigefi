@@ -169,6 +169,10 @@ canvas.chart-classificacoes {
 
 /* SCROLLER */
 
+body.scroller {
+    --h_chart: 400px;
+}
+
 .container-scroller {
     position: relative;
     max-width: 620px;
@@ -177,18 +181,26 @@ canvas.chart-classificacoes {
 
 .container-chart-scroller {
     position: sticky;
-    top: 1rem;
+    top: 50vh;
     left: 0;
-    height: 400px;
+    height: var(--h_chart);
     border: 1px solid pink;
+    transform: translateY(-50%);
 }
 
 .container-story {
-    margin-top: 0;
+    margin-top: calc(-1 * var(--h_chart));
     border: 2px solid black;
     width: 100%;
 }
 
 .wrapper-step {
     height: 100vh;
+}
+
+/* CHART SCROLLER */
+
+svg {
+    height: 100%;
+    width: 100%;
 }
